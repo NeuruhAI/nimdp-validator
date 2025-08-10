@@ -5,3 +5,7 @@ dist/
 build/
 *.spec
 .env
+dist/
+build/
+*.spec
+
