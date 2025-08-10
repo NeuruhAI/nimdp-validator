@@ -20,3 +20,6 @@ A GitHub Actions workflow validates on every push/PR.
 
 ## Packaging
 pyinstaller --onefile validator.py
+
+## Token Packs
+Private repo: https://github.com/NeuruhAI/nimdp-packs
