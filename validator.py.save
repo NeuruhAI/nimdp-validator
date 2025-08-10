@@ -1,0 +1,511 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+NIMDP Protocol Checker Agent — CLI + Notion Integration
+Alias: NIMDP-MCP/VALIDATOR-01
+
+Purpose:
+- Validate any product/agent/GPT spec against the Neuruh Integrated Market Domination Protocol.
+- Weighted scoring; hard-blockers cannot be overridden without explicit flag.
+- Generate JSON/Markdown reports.
+- Optional: push a summary page to Notion.
+
+Usage examples:
+  python validator.py --project-name "REI-X SellerIntel v1" --input spec.md --outdir reports
+  python validator.py --project-name "SONA-X Perimeter v1" --input spec1.md spec2.txt --outdir reports --push-notion
+
+Requirements:
+  pip install requests pyyaml
+"""
+
+import argparse
+import os
+import sys
+import json
+import re
+import time
+import datetime as dt
+from pathlib import Path
+from typing import List, Dict, Any, Tuple
+
+# External (optional) token map
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+# Optional: Notion API
+try:
+    import requests
+except ImportError:
+    requests = None
+
+# -----------------------------
+# Default Token Map & Weights
+# -----------------------------
+DEFAULT_TOKENS = {
+    "phases": {
+        "PHASE_1_PRODUCT": {
+            "weight": 0.30,
+            "tokens": {
+                "TARGET_LOCK": {
+                    "desc": "Buyer segment clarity (narrow ICP).",
+                    "weight": 0.35,
+                    "keywords_any": ["ICP", "ideal customer", "buyer segment", "niche", "target market"],
+                    "hard_blocker": True,
+                    "remediation": "Define a narrow ICP with firmographics, pain, urgency, and budget. Add it to the spec under Product."
+                },
+                "VALUE_EQUATION": {
+                    "desc": "Value equation maximized: Dream Outcome × Likelihood / (Time × Effort).",
+                    "weight": 0.25,
+                    "keywords_any": ["Dream Outcome", "Likelihood of Achievement", "time delay", "effort", "sacrifice", "value equation"],
+                    "hard_blocker": False,
+                    "remediation": "Explicitly state Dream Outcome, proof mechanisms, time-to-value, and effort reduction strategies."
+                },
+                "RISK_REVERSAL": {
+                    "desc": "Guarantees, warranties, or risk-shifting bonuses.",
+                    "weight": 0.20,
+                    "keywords_any": ["guarantee", "warranty", "risk reversal", "money-back", "free extension"],
+                    "hard_blocker": False,
+                    "remediation": "Add a guarantee or performance warranty with clear terms; include bonuses that reduce perceived risk."
+                },
+                "OFFER_FRAME": {
+                    "desc": "Transformation-first framing vs feature list.",
+                    "weight": 0.20,
+                    "keywords_any": ["transformation", "outcome", "before/after", "result", "case study"],
+                    "hard_blocker": False,
+                    "remediation": "Rewrite offer copy to headline the transformation and outcomes; demote features to supporting role."
+                }
+            }
+        },
+        "PHASE_2_MARKETING": {
+            "weight": 0.25,
+            "tokens": {
+                "BEACHHEAD": {
+                    "desc": "Single must-win segment selected before going wide.",
+                    "weight": 0.35,
+                    "keywords_any": ["beachhead", "first pin", "primary segment", "must-win niche"],
+                    "hard_blocker": True,
+                    "remediation": "Pick one high-urgency segment and state it clearly. Defer all others to the Bowling Alley plan."
+                },
+                "WHOLE_PRODUCT": {
+                    "desc": "Complete solution incl. services/integrations for pragmatists.",
+                    "weight": 0.25,
+                    "keywords_any": ["whole product", "integration", "add-on", "implementation", "support", "SLA", "compliance"],
+                    "hard_blocker": False,
+                    "remediation": "List the complete bundle: integrations, onboarding, training, SLAs, compliance artifacts."
+                },
+                "PRAGMATIST_TRANSLATION": {
+                    "desc": "Messaging that de-risks innovation for mainstream buyers.",
+                    "weight": 0.20,
+                    "keywords_any": ["pragmatist", "proof", "case studies", "reference customers", "ROI evidence"],
+                    "hard_blocker": False,
+                    "remediation": "Add proof assets: case studies, references, ROI calculators, implementation timelines."
+                },
+                "BOWLING_ALLEY": {
+                    "desc": "Sequenced adjacent niches after beachhead.",
+                    "weight": 0.20,
+                    "keywords_any": ["bowling alley", "adjacent segments", "expansion sequence", "next segments"],
+                    "hard_blocker": False,
+                    "remediation": "Map a 3-4 segment expansion plan with entry criteria and readiness checkpoints."
+                }
+            }
+        },
+        "PHASE_3_SALES": {
+            "weight": 0.20,
+            "tokens": {
+                "DREAM_100": {
+                    "desc": "Top 100 accounts identified with named cadence.",
+                    "weight": 0.35,
+                    "keywords_any": ["Dream 100", "top 100", "account list", "account-based", "ABM"],
+                    "hard_blocker": True,
+                    "remediation": "Publish the named Dream 100 list in the spec; define cadence by channel and owner."
+                },
+                "EDUCATE": {
+                    "desc": "Education-first assets for authority building.",
+                    "weight": 0.25,
+                    "keywords_any": ["webinar", "whitepaper", "playbook", "workshop", "education-based"],
+                    "hard_blocker": False,
+                    "remediation": "Add 1-2 education assets (e.g., webinar series, ‘State of X’ brief) with titles and deadlines."
+                },
+                "FOLLOW_UP": {
+                    "desc": "7+ touches in a multi-channel sequence.",
+                    "weight": 0.20,
+                    "keywords_any": ["follow-up", "multi-touch", "sequence", "cadence", "8 touches", "7 touches"],
+                    "hard_blocker": False,
+                    "remediation": "Document an 8-touch sequence with timing, channel stack, and disqualification criteria."
+                },
+                "DATA_HOOK": {
+                    "desc": "Stat-driven opening and ROI proof.",
+                    "weight": 0.20,
+                    "keywords_any": ["data shows", "percent", "%", "study", "benchmark", "ROI"],
+                    "hard_blocker": False,
+                    "remediation": "Insert 2-3 credible stats that frame urgency; cite source and weave into openers."
+                }
+            }
+        },
+        "PHASE_4_OPERATIONS": {
+            "weight": 0.20,
+            "tokens": {
+                "VISION_LOCK": {
+                    "desc": "EOS 8Q vision completed and shared.",
+                    "weight": 0.25,
+                    "keywords_any": ["8 questions", "EOS", "vision", "core focus", "10-year target", "marketing strategy", "3-year picture", "1-year plan"],
+                    "hard_blocker": False,
+                    "remediation": "Attach the completed EOS Vision/Traction Organizer (all 8 questions) to the spec."
+                },
+                "RIGHT_PEOPLE": {
+                    "desc": "GWC: Gets it, Wants it, Capacity per seat.",
+                    "weight": 0.20,
+                    "keywords_any": ["GWC", "Gets it", "Wants it", "Capacity", "right people right seats"],
+                    "hard_blocker": False,
+                    "remediation": "List each role with GWC status; move or hire to close gaps."
+                },
+                "DATA_TRACK": {
+                    "desc": "5–15 weekly KPIs live.",
+                    "weight": 0.20,
+                    "keywords_any": ["KPI", "scorecard", "dashboard", "metrics", "weekly"],
+                    "hard_blocker": False,
+                    "remediation": "Publish a weekly scorecard with 5–15 metrics, owners, and targets."
+                },
+                "IDS": {
+                    "desc": "Level-10 cadence with IDS (Identify, Discuss, Solve).",
+                    "weight": 0.15,
+                    "keywords_any": ["Level 10", "L10", "IDS", "weekly meeting", "issues list"],
+                    "hard_blocker": False,
+                    "remediation": "Schedule a weekly L10 with a living issues list and documented IDS outcomes."
+                },
+                "PROCESS_CORE": {
+                    "desc": "20% SOPs that drive 80% of results documented.",
+                    "weight": 0.10,
+                    "keywords_any": ["SOP", "standard operating", "process map", "playbook"],
+                    "hard_blocker": False,
+                    "remediation": "Document the top 20% SOPs by throughput; store links in the spec."
+                },
+                "ROCKS": {
+                    "desc": "3–7 quarterly Rocks with owners.",
+                    "weight": 0.10,
+                    "keywords_any": ["Rocks", "quarterly priorities", "OKR", "90-day"],
+                    "hard_blocker": False,
+                    "remediation": "List 3–7 Rocks with owners, deadlines, and definitions of done."
+                }
+            }
+        },
+        "QA_RECURSION": {
+            "weight": 0.05,
+            "tokens": {
+                "INTEGRATION_CHECK": {
+                    "desc": "Cross-phase alignment confirmed pre-launch.",
+                    "weight": 0.5,
+                    "keywords_any": ["integration check", "cross-phase", "market ready", "go/no-go"],
+                    "hard_blocker": False,
+                    "remediation": "Add a formal, named Integration Check section with a go/no-go gate."
+                },
+                "FEEDBACK_LOOP": {
+                    "desc": "30/60/90 (or similar) learning loop locked.",
+                    "weight": 0.5,
+                    "keywords_any": ["feedback loop", "post-launch", "retro", "30/60/90", "iteration"],
+                    "hard_blocker": False,
+                    "remediation": "Schedule post-launch retros at 30/60/90 with owners and improvement backlog."
+                }
+            }
+        }
+    },
+    "pass_threshold": 0.80,   # Market Ready threshold
+    "hard_block_on_fail": True
+}
+
+# -----------------------------
+# Helpers
+# -----------------------------
+def read_file_text(path: Path) -> str:
+    suffix = path.suffix.lower()
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    # normalize whitespace
+    return re.sub(r'\s+', ' ', text).strip()
+
+def load_token_map(external_yaml: Path = None) -> Dict[str, Any]:
+    if external_yaml and external_yaml.exists() and yaml is not None:
+        with external_yaml.open("r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    return DEFAULT_TOKENS
+
+def now_stamp() -> str:
+    return dt.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+
+def sanitize_title(s: str) -> str:
+    return re.sub(r'[^A-Za-z0-9._-]+', '_', s).strip('_')
+
+def find_any_keywords(text: str, keywords: List[str]) -> bool:
+    t = text.lower()
+    for kw in keywords:
+        if kw.lower() in t:
+            return True
+    return False
+
+def score_phase(text: str, phase_name: str, phase_def: Dict[str, Any]) -> Tuple[float, Dict[str, Any], List[Dict[str, str]], bool]:
+    phase_weight = phase_def["weight"]
+    tokens = phase_def["tokens"]
+    hard_block_triggered = False
+    token_results = {}
+    remediation_list = []
+
+    # Weighted sum inside the phase
+    achieved = 0.0
+    total = 0.0
+
+    for token_key, token_def in tokens.items():
+        t_weight = token_def["weight"]
+        total += t_weight
+        hit = find_any_keywords(text, token_def["keywords_any"])
+        token_results[token_key] = {
+            "desc": token_def["desc"],
+            "weight": t_weight,
+            "present": bool(hit),
+            "hard_blocker": token_def.get("hard_blocker", False)
+        }
+        if hit:
+            achieved += t_weight
+        else:
+            remediation_list.append({
+                "token": f"{phase_name}.{token_key}",
+                "issue": f"Missing evidence for {token_key}",
+                "fix": token_def["remediation"]
+            })
+            if token_def.get("hard_blocker", False):
+                hard_block_triggered = True
+
+    # Normalize to phase weight
+    phase_score = (achieved / total) * phase_weight if total > 0 else 0.0
+    return phase_score, token_results, remediation_list, hard_block_triggered
+
+def aggregate_scores(texts: List[str], token_map: Dict[str, Any]) -> Dict[str, Any]:
+    # Merge all text content to search across multiple files
+    joined = " ".join(texts)
+    phases = token_map["phases"]
+    results = {
+        "phases": {},
+        "hard_block_triggered": False,
+        "score": 0.0
+    }
+    total_score = 0.0
+    remediations = []
+
+    for pname, pdef in phases.items():
+        pscore, tokens, fixes, hb = score_phase(joined, pname, pdef)
+        results["phases"][pname] = {
+            "score_contrib": pscore,
+            "tokens": tokens
+        }
+        total_score += pscore
+        if hb:
+            results["hard_block_triggered"] = True
+        remediations.extend(fixes)
+
+    results["score"] = round(total_score, 4)
+    results["remediations"] = remediations
+    return results
+
+def status_from_score(score: float, hard_block: bool, threshold: float, hard_block_on_fail: bool) -> str:
+    if hard_block and hard_block_on_fail:
+        return "BLOCKED"
+    return "MARKET READY" if score >= threshold else "NOT READY"
+
+def ensure_outdir(path: Path):
+    path.mkdir(parents=True, exist_ok=True)
+
+# -----------------------------
+# Reporting
+# -----------------------------
+def build_markdown_report(project_name: str, score: float, status: str, details: Dict[str, Any]) -> str:
+    lines = []
+    lines.append(f"# NIMDP Validation Report — {project_name}")
+    lines.append(f"- Generated (UTC): {dt.datetime.utcnow().isoformat()}")
+    lines.append(f"- Score: **{round(score*100, 2)}%**")
+    lines.append(f"- Status: **{status}**")
+    lines.append("\n---\n")
+    for pname, pobj in details["phases"].items():
+        lines.append(f"## {pname}")
+        lines.append(f"- Score Contribution: {round(pobj['score_contrib']*100, 2)}%")
+        lines.append("")
+        lines.append("| Token | Present | Hard Blocker | Weight |")
+        lines.append("|---|---:|---:|---:|")
+        for tname, tobj in pobj["tokens"].items():
+            lines.append(f"| {tname} | {'YES' if tobj['present'] else 'NO'} | {'YES' if tobj['hard_blocker'] else 'NO'} | {tobj['weight']} |")
+        lines.append("")
+    if details.get("remediations"):
+        lines.append("## Remediation Plan")
+        for r in details["remediations"]:
+            lines.append(f"- **{r['token']}**: {r['issue']}. Fix: {r['fix']}")
+    return "\n".join(lines)
+
+def write_reports(project_name: str, outdir: Path, details: Dict[str, Any]) -> Tuple[Path, Path]:
+    ts = now_stamp()
+    base = f"{ts}__{sanitize_title(project_name)}"
+    json_path = outdir / f"{base}.json"
+    md_path = outdir / f"{base}.md"
+
+    # JSON
+    with json_path.open("w", encoding="utf-8") as f:
+        json.dump(details, f, indent=2)
+
+    # Markdown
+    md = build_markdown_report(project_name, details["score"], details["status"], details)
+    with md_path.open("w", encoding="utf-8") as f:
+        f.write(md)
+
+    return json_path, md_path
+
+# -----------------------------
+# Notion Integration
+# -----------------------------
+def push_notion(project_name: str, details: Dict[str, Any]) -> Dict[str, Any]:
+    if requests is None:
+        return {"ok": False, "error": "requests not installed"}
+
+    api_key = os.environ.get("NOTION_API_KEY")
+    database_id = os.environ.get("NOTION_DATABASE_ID")
+    if not api_key or not database_id:
+        return {"ok": False, "error": "NOTION_API_KEY or NOTION_DATABASE_ID missing from environment"}
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json"
+    }
+
+    score_pct = round(details["score"] * 100, 2)
+    status = details["status"]
+    # Build a concise summary for the page
+    summary = f"{project_name} — {status} — {score_pct}%\n"
+    # Include remediation bullets (first 10 to keep the page tight)
+    remeds = details.get("remediations", [])
+    if remeds:
+        summary += "\nTop Remediations:\n"
+        for r in remeds[:10]:
+            summary += f"- {r['token']}: {r['fix']}\n"
+
+    create_page_url = "https://api.notion.com/v1/pages"
+    payload = {
+        "parent": {"database_id": database_id},
+        "properties": {
+            "Name": {
+                "title": [{"type": "text", "text": {"content": project_name}}]
+            },
+            "Status": {
+                "select": {"name": status}
+            },
+            "Score": {
+                "number": float(score_pct)
+            },
+            "Timestamp (UTC)": {
+                "date": {"start": dt.datetime.utcnow().isoformat()}
+            }
+        },
+        "children": [
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [{"type": "text", "text": {"content": summary}}]
+                }
+            }
+        ]
+    }
+
+    resp = requests.post(create_page_url, headers=headers, data=json.dumps(payload))
+    if resp.status_code >= 200 and resp.status_code < 300:
+        data = resp.json()
+        return {"ok": True, "page_id": data.get("id")}
+    return {"ok": False, "error": f"HTTP {resp.status_code}: {resp.text}"}
+
+# -----------------------------
+# CLI
+# -----------------------------
+def parse_args():
+    p = argparse.ArgumentParser(
+        description="NIMDP Protocol Checker Agent — validate specs against Neuruh market domination standard."
+    )
+    p.add_argument("--project-name", required=True, help="Human-readable project name (e.g., 'REI-X SellerIntel v1').")
+    p.add_argument("--input", nargs="+", required=True, help="One or more spec files (.md/.txt/.json).")
+    p.add_argument("--outdir", required=True, help="Output directory for reports.")
+    p.add_argument("--token-map", default="token_map.yaml", help="Optional external token map (YAML).")
+    p.add_argument("--push-notion", action="store_true", help="If set, create/update a Notion page with the results.")
+    p.add_argument("--threshold", type=float, default=None, help="Override pass threshold (0..1).")
+    p.add_argument("--no-hard-block", action="store_true", help="Ignore hard blockers (for testing).")
+    return p.parse_args()
+
+def main():
+    args = parse_args()
+
+    # Load tokens
+    token_map_path = Path(args.token_map)
+    token_map = load_token_map(token_map_path if token_map_path.exists() else None)
+
+    if args.threshold is not None:
+        token_map["pass_threshold"] = float(args.threshold)
+    if args.no-hard-block:
+        token_map["hard_block_on_fail"] = False
+
+    # Load inputs
+    texts = []
+    for ipath in args.input:
+        p = Path(ipath)
+        if not p.exists():
+            print(f"[ERROR] Input file not found: {p}", file=sys.stderr)
+            sys.exit(2)
+        try:
+            t = read_file_text(p)
+            if t:
+                texts.append(t)
+        except Exception as e:
+            print(f"[ERROR] Failed reading {p}: {e}", file=sys.stderr)
+            sys.exit(2)
+
+    if not texts:
+        print("[ERROR] No readable content from inputs.", file=sys.stderr)
+        sys.exit(2)
+
+    # Score
+    results = aggregate_scores(texts, token_map)
+    threshold = token_map.get("pass_threshold", 0.80)
+    hard_block = results.get("hard_block_triggered", False)
+    hard_block_on_fail = token_map.get("hard_block_on_fail", True)
+    status = status_from_score(results["score"], hard_block, threshold, hard_block_on_fail)
+    results["status"] = status
+    results["threshold"] = threshold
+    results["hard_block_on_fail"] = hard_block_on_fail
+
+    # Output
+    outdir = Path(args.outdir)
+    ensure_outdir(outdir)
+    jpath, mpath = write_reports(args.project_name, outdir, results)
+
+    # Console summary
+    print("\n=== NIMDP VALIDATION SUMMARY ===")
+    print(f"Project: {args.project_name}")
+    print(f"Status:  {status}")
+    print(f"Score:   {round(results['score']*100, 2)}% (threshold {round(threshold*100,2)}%)")
+    print(f"Hard Block Triggered: {hard_block}")
+    print(f"Reports: {jpath}\n         {mpath}")
+
+    # Notion push (optional)
+    if args.push_notion:
+        push_res = push_notion(args.project_name, results)
+        if push_res.get("ok"):
+            print(f"Notion:  Page created. page_id={push_res.get('page_id')}")
+        else:
+            print(f"Notion:  ERROR — {push_res.get('error')}")
+
+    # Exit code: 0 if Market Ready, 1 if Not Ready, 3 if Blocked
+    if status == "MARKET READY":
+        sys.exit(0)
+    elif status == "NOT READY":
+        sys.exit(1)
+    else:  # BLOCKED
+        sys.exit(3)
+
+if __name__ == "__main__":
+    main()
+
