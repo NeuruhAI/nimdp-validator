@@ -1,0 +1,155 @@
+
+  "phases": {
+    "PHASE_1_PRODUCT": {
+      "score_contrib": 0.3,
+      "tokens": {
+        "TARGET_LOCK": {
+          "desc": "Buyer segment clarity (narrow ICP).",
+          "weight": 0.35,
+          "present": true,
+          "hard_blocker": true
+        },
+        "VALUE_EQUATION": {
+          "desc": "Value equation maximized: Dream Outcome \u00d7 Likelihood / (Time \u00d7 Effort).",
+          "weight": 0.25,
+          "present": true,
+          "hard_blocker": false
+        },
+        "RISK_REVERSAL": {
+          "desc": "Guarantees, warranties, or risk-shifting bonuses.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        },
+        "OFFER_FRAME": {
+          "desc": "Transformation-first framing vs feature list.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        }
+      }
+    },
+    "PHASE_2_MARKETING": {
+      "score_contrib": 0.25,
+      "tokens": {
+        "BEACHHEAD": {
+          "desc": "Single must-win segment selected before going wide.",
+          "weight": 0.35,
+          "present": true,
+          "hard_blocker": true
+        },
+        "WHOLE_PRODUCT": {
+          "desc": "Complete solution incl. services/integrations for pragmatists.",
+          "weight": 0.25,
+          "present": true,
+          "hard_blocker": false
+        },
+        "PRAGMATIST_TRANSLATION": {
+          "desc": "Messaging that de-risks innovation for mainstream buyers.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        },
+        "BOWLING_ALLEY": {
+          "desc": "Sequenced adjacent niches after beachhead.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        }
+      }
+    },
+    "PHASE_3_SALES": {
+      "score_contrib": 0.2,
+      "tokens": {
+        "DREAM_100": {
+          "desc": "Top 100 accounts identified with named cadence.",
+          "weight": 0.35,
+          "present": true,
+          "hard_blocker": true
+        },
+        "EDUCATE": {
+          "desc": "Education-first assets for authority building.",
+          "weight": 0.25,
+          "present": true,
+          "hard_blocker": false
+        },
+        "FOLLOW_UP": {
+          "desc": "7+ touches in a multi-channel sequence.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        },
+        "DATA_HOOK": {
+          "desc": "Stat-driven opening and ROI proof.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        }
+      }
+    },
+    "PHASE_4_OPERATIONS": {
+      "score_contrib": 0.2,
+      "tokens": {
+        "VISION_LOCK": {
+          "desc": "EOS 8Q vision completed and shared.",
+          "weight": 0.25,
+          "present": true,
+          "hard_blocker": false
+        },
+        "RIGHT_PEOPLE": {
+          "desc": "GWC: Gets it, Wants it, Capacity per seat.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        },
+        "DATA_TRACK": {
+          "desc": "5\u201315 weekly KPIs live.",
+          "weight": 0.2,
+          "present": true,
+          "hard_blocker": false
+        },
+        "IDS": {
+          "desc": "Level-10 cadence with IDS (Identify, Discuss, Solve).",
+          "weight": 0.15,
+          "present": true,
+          "hard_blocker": false
+        },
+        "PROCESS_CORE": {
+          "desc": "20% SOPs that drive 80% of results documented.",
+          "weight": 0.1,
+          "present": true,
+          "hard_blocker": false
+        },
+        "ROCKS": {
+          "desc": "3\u20137 quarterly Rocks with owners.",
+          "weight": 0.1,
+          "present": true,
+          "hard_blocker": false
+        }
+      }
+    },
+    "QA_RECURSION": {
+      "score_contrib": 0.05,
+      "tokens": {
+        "INTEGRATION_CHECK": {
+          "desc": "Cross-phase alignment confirmed pre-launch.",
+          "weight": 0.5,
+          "present": true,
+          "hard_blocker": false
+        },
+        "FEEDBACK_LOOP": {
+          "desc": "30/60/90 (or similar) learning loop locked.",
+          "weight": 0.5,
+          "present": true,
+          "hard_blocker": false
+        }
+      }
+    }
+  },
+  "hard_block_triggered": false,
+  "score": 1.0,
+  "remediations": [],
+  "status": "MARKET READY",
+  "threshold": 0.8,
+  "hard_block_on_fail": true
+}

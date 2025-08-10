@@ -210,7 +210,7 @@ def load_token_map(external_yaml: Path = None) -> Dict[str, Any]:
     return DEFAULT_TOKENS
 
 def now_stamp() -> str:
-    return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
+    return dt.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
 
 def sanitize_title(s: str) -> str:
     return re.sub(r'[^A-Za-z0-9._-]+', '_', s).strip('_')
@@ -278,7 +278,7 @@ def ensure_outdir(path: Path):
 def build_markdown_report(project_name: str, score: float, status: str, details: Dict[str, Any]) -> str:
     lines = []
     lines.append(f"# NIMDP Validation Report — {project_name}")
-    lines.append(f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).isoformat()}")
+    lines.append(f"- Generated (UTC): {dt.datetime.utcnow().isoformat()}")
     lines.append(f"- Score: **{round(score*100, 2)}%**")
     lines.append(f"- Status: **{status}**\n")
     lines.append("---\n")
@@ -330,7 +330,7 @@ def push_notion(project_name: str, details: Dict[str, Any]) -> Dict[str, Any]:
             "Name": {"title": [{"type": "text", "text": {"content": project_name}}]},
             "Status": {"select": {"name": status}},
             "Score": {"number": float(score_pct)},
-            "Timestamp (UTC)": {"date": {"start": dt.datetime.now(dt.timezone.utc).isoformat()}}
+            "Timestamp (UTC)": {"date": {"start": dt.datetime.utcnow().isoformat()}}
         },
         "children": [{
             "object": "block",
