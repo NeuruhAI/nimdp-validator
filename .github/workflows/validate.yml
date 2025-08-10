@@ -13,9 +13,3 @@ jobs:
       - run: |
           mkdir -p reports
           python validator.py --project-name "${{ github.sha }}" --input samples/demo_spec.md --outdir reports
-      # Optional Notion push (requires org/repo secrets)
-      # - run: |
-      #     python validator.py --project-name "${{ github.sha }}" --input samples/demo_spec.md --outdir reports --push-notion
-      #   env:
-      #     NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-      #     NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
