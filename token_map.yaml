@@ -1,0 +1,138 @@
+pass_threshold: 0.80
+hard_block_on_fail: true
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.30
+    tokens:
+      TARGET_LOCK:
+        desc: "Buyer segment clarity (narrow ICP)."
+        weight: 0.35
+        keywords_any: ["ICP","ideal customer","buyer segment","niche","target market"]
+        hard_blocker: true
+        remediation: "Define a narrow ICP with firmographics, pain, urgency, and budget."
+      VALUE_EQUATION:
+        desc: "Value equation maximized."
+        weight: 0.25
+        keywords_any: ["Dream Outcome","Likelihood of Achievement","time delay","effort","value equation"]
+        hard_blocker: false
+        remediation: "State Dream Outcome, proof, time-to-value, effort reduction."
+      RISK_REVERSAL:
+        desc: "Guarantees/bonuses present."
+        weight: 0.20
+        keywords_any: ["guarantee","warranty","risk reversal","money-back","free extension"]
+        hard_blocker: false
+        remediation: "Add performance warranty; define terms."
+      OFFER_FRAME:
+        desc: "Transformation-first framing."
+        weight: 0.20
+        keywords_any: ["transformation","outcome","before/after","result","case study"]
+        hard_blocker: false
+        remediation: "Lead with transformation; demote features."
+  PHASE_2_MARKETING:
+    weight: 0.25
+    tokens:
+      BEACHHEAD:
+        desc: "Single must-win segment."
+        weight: 0.35
+        keywords_any: ["beachhead","first pin","primary segment","must-win niche"]
+        hard_blocker: true
+        remediation: "Choose one high-urgency segment; defer others."
+      WHOLE_PRODUCT:
+        desc: "Complete solution for pragmatists."
+        weight: 0.25
+        keywords_any: ["whole product","integration","add-on","implementation","support","SLA","compliance"]
+        hard_blocker: false
+        remediation: "List integrations, onboarding, SLAs, compliance."
+      PRAGMATIST_TRANSLATION:
+        desc: "De-risked messaging and proof."
+        weight: 0.20
+        keywords_any: ["pragmatist","proof","case studies","reference customers","ROI evidence"]
+        hard_blocker: false
+        remediation: "Add case studies, references, ROI calculators."
+      BOWLING_ALLEY:
+        desc: "Sequenced adjacencies."
+        weight: 0.20
+        keywords_any: ["bowling alley","adjacent segments","expansion sequence","next segments"]
+        hard_blocker: false
+        remediation: "Map 3–4 segment expansion with triggers."
+  PHASE_3_SALES:
+    weight: 0.20
+    tokens:
+      DREAM_100:
+        desc: "Top 100 accounts + cadence."
+        weight: 0.35
+        keywords_any: ["Dream 100","top 100","account list","account-based","ABM"]
+        hard_blocker: true
+        remediation: "Publish Dream 100 with cadence and owners."
+      EDUCATE:
+        desc: "Education-first assets."
+        weight: 0.25
+        keywords_any: ["webinar","whitepaper","playbook","workshop","education-based"]
+        hard_blocker: false
+        remediation: "Add 1–2 education assets with deadlines."
+      FOLLOW_UP:
+        desc: "7+ touches multi-channel."
+        weight: 0.20
+        keywords_any: ["follow-up","multi-touch","sequence","cadence","7 touches","8 touches"]
+        hard_blocker: false
+        remediation: "Document an 8-touch sequence with timing."
+      DATA_HOOK:
+        desc: "Stat-driven opener."
+        weight: 0.20
+        keywords_any: ["data shows","%","percent","study","benchmark","ROI"]
+        hard_blocker: false
+        remediation: "Insert 2–3 credible stats with sources."
+  PHASE_4_OPERATIONS:
+    weight: 0.20
+    tokens:
+      VISION_LOCK:
+        desc: "EOS 8Q vision complete."
+        weight: 0.25
+        keywords_any: ["8 questions","EOS","vision","core focus","10-year target","3-year picture","1-year plan","marketing strategy"]
+        hard_blocker: false
+        remediation: "Attach completed EOS V/TO."
+      RIGHT_PEOPLE:
+        desc: "GWC per seat."
+        weight: 0.20
+        keywords_any: ["GWC","Gets it","Wants it","Capacity","right people right seats"]
+        hard_blocker: false
+        remediation: "List each role with GWC status."
+      DATA_TRACK:
+        desc: "5–15 KPIs weekly."
+        weight: 0.20
+        keywords_any: ["KPI","scorecard","dashboard","metrics","weekly"]
+        hard_blocker: false
+        remediation: "Publish a weekly scorecard."
+      IDS:
+        desc: "L10 cadence with IDS."
+        weight: 0.15
+        keywords_any: ["Level 10","L10","IDS","weekly meeting","issues list"]
+        hard_blocker: false
+        remediation: "Set weekly L10; track IDS outcomes."
+      PROCESS_CORE:
+        desc: "20% SOPs documented."
+        weight: 0.10
+        keywords_any: ["SOP","standard operating","process map","playbook"]
+        hard_blocker: false
+        remediation: "Document top-throughput SOPs."
+      ROCKS:
+        desc: "3–7 quarterly rocks."
+        weight: 0.10
+        keywords_any: ["Rocks","quarterly priorities","OKR","90-day"]
+        hard_blocker: false
+        remediation: "List Rocks with owners & DoD."
+  QA_RECURSION:
+    weight: 0.05
+    tokens:
+      INTEGRATION_CHECK:
+        desc: "Cross-phase go/no-go."
+        weight: 0.5
+        keywords_any: ["integration check","cross-phase","market ready","go/no-go"]
+        hard_blocker: false
+        remediation: "Add formal go/no-go gate."
+      FEEDBACK_LOOP:
+        desc: "30/60/90 learning loop."
+        weight: 0.5
+        keywords_any: ["feedback loop","post-launch","retro","30/60/90","iteration"]
+        hard_blocker: false
+        remediation: "Schedule retros with owners."
