@@ -1,0 +1,95 @@
+phases:
+  STRATEGY_LOCK:
+    weight: 0.25
+    tokens:
+      TARGET_LOCK:
+        desc: "Define ICP + validate with 10 customer conversations."
+        weight: 0.25
+        keywords_any: ["ICP", "ideal customer", "10 customers", "conversations", "validation calls"]
+        hard_blocker: true
+        remediation: "Define ICP and log 10 validation conversations."
+      VALUE_EQUATION:
+        desc: "Quantify outcome + collect proof points."
+        weight: 0.25
+        keywords_any: ["quantified outcome", "ROI", "proof points", "value equation"]
+        remediation: "Add numerical outcomes and proof points."
+      DREAM_100:
+        desc: "Build target list with contact intel."
+        weight: 0.25
+        keywords_any: ["Dream 100", "target list", "contact info", "intel"]
+        remediation: "Build the Dream 100 list with emails/phones."
+      VISION_LOCK:
+        desc: "Document 90-day launch goals with kill criteria."
+        weight: 0.25
+        keywords_any: ["90-day goals", "launch goals", "kill criteria", "success metrics"]
+        remediation: "Set clear 90-day goals and kill criteria."
+
+  PROOF_GENERATION:
+    weight: 0.25
+    tokens:
+      EDUCATE:
+        desc: "Create problem/solution content."
+        weight: 0.25
+        keywords_any: ["problem/solution", "educational content", "whitepaper", "guide"]
+        remediation: "Create educational assets addressing the core problem."
+      PRAGMATIST_TRANSLATION:
+        desc: "Get 1-3 case studies/testimonials."
+        weight: 0.25
+        keywords_any: ["case study", "testimonial", "social proof", "reference"]
+        remediation: "Secure 1-3 case studies or testimonials."
+      OFFER_FRAME:
+        desc: "Rewrite positioning as transformation narrative."
+        weight: 0.25
+        keywords_any: ["transformation", "narrative", "positioning", "before/after"]
+        remediation: "Reframing offer as a transformation."
+      RISK_REVERSAL:
+        desc: "Design pilot program or money-back terms."
+        weight: 0.25
+        keywords_any: ["money-back", "guarantee", "pilot program", "risk reversal"]
+        remediation: "Add a guarantee or low-risk pilot option."
+
+  OPERATIONAL_READINESS:
+    weight: 0.25
+    tokens:
+      RIGHT_PEOPLE:
+        desc: "Staff critical roles or define hiring plan."
+        weight: 0.25
+        keywords_any: ["staffing", "hiring plan", "roles", "org chart"]
+        remediation: "Define critical roles and hiring timeline."
+      PROCESS_CORE:
+        desc: "Document delivery SOPs."
+        weight: 0.25
+        keywords_any: ["SOP", "delivery process", "playbook", "standard operating procedure"]
+        remediation: "Document core delivery SOPs."
+      DATA_TRACK:
+        desc: "Deploy analytics for leading indicators."
+        weight: 0.25
+        keywords_any: ["analytics", "leading indicators", "dashboard", "tracking"]
+        remediation: "Setup analytics for leading indicators."
+      ROCKS:
+        desc: "Assign 90-day milestones with DRIs."
+        weight: 0.25
+        keywords_any: ["rocks", "milestones", "DRI", "quarterly goals"]
+        remediation: "Assign Rocks and DRIs."
+
+  VALIDATION:
+    weight: 0.25
+    tokens:
+      INTEGRATION_CHECK:
+        desc: "Run simulated launch with internal team."
+        weight: 0.33
+        keywords_any: ["simulation", "dry run", "internal launch", "integration check"]
+        remediation: "Perform a launch simulation."
+      FEEDBACK_LOOP:
+        desc: "Deploy beta to 5 friendly customers."
+        weight: 0.33
+        keywords_any: ["beta", "friendly customers", "feedback loop", "early access"]
+        remediation: "Get product in hands of 5 friendlies."
+      FOLLOW_UP:
+        desc: "Test outreach sequences on 20 prospects."
+        weight: 0.34
+        keywords_any: ["outreach sequence", "prospects", "testing", "20 prospects"]
+        remediation: "Test outreach on 20 cold prospects."
+
+pass_threshold: 0.80
+hard_block_on_fail: true

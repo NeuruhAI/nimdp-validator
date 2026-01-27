@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+nimdp_validator/__init__.py
+nimdp_validator/config.py
+nimdp_validator/core.py
+nimdp_validator/main.py
+nimdp_validator/models.py
+nimdp_validator/notion.py
+nimdp_validator/reporting.py
+nimdp_validator.egg-info/PKG-INFO
+nimdp_validator.egg-info/SOURCES.txt
+nimdp_validator.egg-info/dependency_links.txt
+nimdp_validator.egg-info/requires.txt
+nimdp_validator.egg-info/top_level.txt
+tests/test_scoring.py
