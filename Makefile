@@ -1,32 +1,43 @@
-.PHONY: validate backup run open last clean diff
+VENV = .venv
+PY = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
 
-# 1-step: backup current YAML, run validator, and show output path
-validate: backup run open
+.PHONY: venv validate package clean backup run-local open validate-local last diff
 
-# Backup with timestamp (.bak lives beside token_map.yaml)
+venv:
+	python3 -m venv $(VENV)
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt || true
+
+## Default validate: CI-style sample run (venv)
+validate: venv
+	mkdir -p reports
+	$(PY) validator.py --project-name "Local" --input samples/demo_spec.md --outdir reports
+
+## Local token_map.yaml workflow (kept from history; avoids clobbering validate)
 backup:
 	cp -f token_map.yaml "token_map.$(shell date +%Y%m%d-%H%M%S).yaml.bak"
 
-# Run the validator
-run:
+run-local:
+	mkdir -p out
 	python3 validator.py --project-name valuator --input token_map.yaml --outdir out
 
-# Open the newest MD report (macOS)
+validate-local: backup run-local open
+
 open:
-	@latest=$$(ls -t out/*__valuator.md | head -n1); \
-	echo "Opening $$latest"; \
-	open "$$latest"
+	@latest=$$(ls -t out/*__valuator.md 2>/dev/null | head -n1); \
+	if [ -n "$$latest" ]; then echo "Opening $$latest"; open "$$latest"; else echo "No out/__valuator.md"; fi
 
-# Show the newest run file pair
 last:
-	@ls -lt out/*__valuator.* | head -n4
+	@ls -lt out/*__valuator.* 2>/dev/null | head -n4
 
-# Clean out reports
+package: venv
+	$(PIP) install pyinstaller
+	$(VENV)/bin/pyinstaller --onefile validator.py
+
 clean:
-	rm -rf out
+	rm -rf out reports dist build *.spec
 
-# See what changed vs last backup (requires 'diff')
 diff:
-	@latest=$$(ls -t token_map.*.yaml.bak | head -n1); \
-	echo "Comparing token_map.yaml ↔ $$latest"; \
-	diff -u "$$latest" token_map.yaml || true
+	@latest=$$(ls -t token_map.*.yaml.bak 2>/dev/null | head -n1); \
+	if [ -n "$$latest" ]; then echo "Comparing token_map.yaml ↔ $$latest"; diff -u "$$latest" token_map.yaml || true; else echo "No backups"; fi
