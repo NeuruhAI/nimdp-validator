@@ -1,0 +1,319 @@
+pass_threshold: 0.85
+hard_block_on_fail: true
+
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.32
+    tokens:
+      TARGET_LOCK:
+        desc: ICP: vertical, size band, buyer title, ACV.
+        weight: 0.35
+        keywords_any: ["ICP","ideal customer","buyer persona","vertical SaaS","ACV","SMB","mid-market","enterprise","buyer title","VP","Head of"]
+        hard_blocker: true
+        remediation: "Define vertical, company size band, primary buyer title, ACV range, budget authority."
+      VALUE_EQUATION:
+        desc: Value equation (time-to-first-value, effort, proof).
+        weight: 0.25
+        keywords_any: ["time to value","onboarding time","implementation","TTV","case study","reference","ROI","pilot","POC"]
+        hard_blocker: false
+        remediation: "Quantify time-to-first-value and effort; add 1–2 case studies or reference customers."
+      RISK_REVERSAL:
+        desc: Guarantees, pilot, or flexible terms.
+        weight: 0.20
+        keywords_any: ["pilot","POC","proof of concept","money-back","opt-out","month-to-month","free extension","warranty","risk reversal"]
+        hard_blocker: false
+        remediation: "Offer pilot/opt-out or performance warranty with clear terms."
+      OFFER_FRAME:
+        desc: Outcome/metric-led narrative, not features.
+        weight: 0.20
+        keywords_any: ["outcome","metric","before/after","KPI impact","case study"]
+        hard_blocker: false
+        remediation: "Lead with outcome metrics (e.g., '% faster close'); keep features as proof."
+
+  PHASE_2_MARKETING:
+    weight: 0.25
+    tokens:
+      BEACHHEAD:
+        desc: One must-win vertical or segment before expansion.
+        weight: 0.35
+        keywords_any: ["beachhead","first pin","primary segment","must-win","vertical focus","narrow segment"]
+        hard_blocker: true
+        remediation: "Pick one high-urgency segment and defer others to Bowling Alley."
+      WHOLE_PRODUCT:
+        desc: Complete bundle: integrations, onboarding, SLA, compliance.
+        weight: 0.25
+        keywords_any: ["integration","API","SSO","SCIM","onboarding","SLA","SOC 2","ISO 27001","GDPR","HIPAA","compliance"]
+        hard_blocker: false
+        remediation: "List core integrations, SSO/SCIM, onboarding steps, SLAs, compliance artifacts."
+      PRAGMATIST_TRANSLATION:
+        desc: Evidence for mainstream buyers (logos, references, ROI calc).
+        weight: 0.20
+        keywords_any: ["reference customer","logo","ROI calculator","TCO","security review","DPA"]
+        hard_blocker: false
+        remediation: "Add references/logo row, ROI/TCO calculator, security/DPA packet."
+      BOWLING_ALLEY:
+        desc: Sequenced vertical expansion with triggers.
+        weight: 0.20
+        keywords_any: ["bowling alley","adjacent segments","expansion plan","trigger","entry criteria"]
+        hard_blocker: false
+        remediation: "Map 3–4 adjacencies with entry criteria (ARR threshold, win rate, support load)."
+
+  PHASE_3_SALES:
+    weight: 0.20
+    tokens:
+      DREAM_100:
+        desc: Named top 100 accounts + channel cadence.
+        weight: 0.35
+        keywords_any: ["Dream 100","target account list","ABM","account-based","ICP list"]
+        hard_blocker: true
+        remediation: "Publish Dream 100 with owners and multi-channel cadence."
+      EDUCATE:
+        desc: Authority assets (webinar, whitepaper, workshop).
+        weight: 0.25
+        keywords_any: ["webinar","whitepaper","playbook","workshop","benchmark report","state of"]
+        hard_blocker: false
+        remediation: "Ship a 'State of X' report & webinar with dates."
+      FOLLOW_UP:
+        desc: 7–12 touch sequence; disqualify rules.
+        weight: 0.20
+        keywords_any: ["sequence","cadence","touches","outbound","inbound SLAs","disqualify","recycle"]
+        hard_blocker: false
+        remediation: "Document 8–12 touch plan, SLAs, disqualify/recycle rules."
+      DATA_HOOK:
+        desc: Stat-led opener (benchmarks, lift).
+        weight: 0.20
+        keywords_any: ["benchmark","% lift","conversion rate","cycle time","win rate","CSAT","NPS"]
+        hard_blocker: false
+        remediation: "Add 2–3 credible stats and cite sources."
+
+  PHASE_4_OPERATIONS:
+    weight: 0.20
+    tokens:
+      VISION_LOCK:
+        desc: EOS/OKR alignment (8Q or equivalent).
+        weight: 0.25
+        keywords_any: ["EOS","V/TO","vision","OKR","annual plan","3-year picture","1-year plan"]
+        hard_blocker: false
+        remediation: "Attach V/TO or OKR doc with cadence."
+      RIGHT_PEOPLE:
+        desc: Roles/GWC; capacity in CS/Impl.
+        weight: 0.20
+        keywords_any: ["GWC","role clarity","capacity","CSM","implementation","PS","hiring plan"]
+        hard_blocker: false
+        remediation: "List roles with GWC; show hiring/contract plan for CS/Impl."
+      DATA_TRACK:
+        desc: 5–15 KPIs tracked weekly.
+        weight: 0.20
+        keywords_any: ["KPI","scorecard","dashboard","weekly","ARR","NRR","GRR","pipeline coverage","churn"]
+        hard_blocker: false
+        remediation: "Publish weekly scorecard with owners/targets."
+      IDS:
+        desc: Weekly L10/ops review with IDS outcomes.
+        weight: 0.15
+        keywords_any: ["L10","weekly review","issues list","IDS","retrospective"]
+        hard_blocker: false
+        remediation: "Schedule L10; capture IDS decisions."
+      PROCESS_CORE:
+        desc: 20% SOPs generating 80% outcomes documented.
+        weight: 0.10
+        keywords_any: ["SOP","runbook","playbook","process map","handoff"]
+        hard_blocker: false
+        remediation: "Document core SOPs (onboarding, renewals, incident)."
+      ROCKS:
+        desc: 3–7 quarterly rocks wi
+
+cat > packs/token_map_rei.yaml <<'YAML'
+pass_threshold: 0.83
+hard_block_on_fail: true
+
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.34
+    tokens:
+      TARGET_LOCK:
+        desc: Asset class + seller/buyer persona + geography.
+        weight: 0.35
+        keywords_any: ["single family","multifamily","duplex","land","wholesale","fix and flip","seller profile","motivated seller","MSA","zip"]
+        hard_blocker: true
+        remediation: "Declare asset class, persona, and target MSA/zip with motivation and timeline."
+      VALUE_EQUATION:
+        desc: Economics and proof (ARV, cap, DSCR, comps).
+        weight: 0.25
+        keywords_any: ["ARV","cap rate","cash-on-cash","LTV","DSCR","comps","time to close"]
+        hard_blocker: false
+        remediation: "Quantify ARV/cap/DSCR; include comps and close timelines."
+      RISK_REVERSAL:
+        desc: Guarantees/earnest money/policy to de-risk.
+        weight: 0.20
+        keywords_any: ["earnest money","inspection period","guarantee","assignment","escrow","warranty"]
+        hard_blocker: false
+        remediation: "Add transparent guarantees or inspection/escrow terms."
+      OFFER_FRAME:
+        desc: Before/after economics for the counterpart.
+        weight: 0.20
+        keywords_any: ["before/after","profit","spread","days on market","holding costs","equity"]
+        hard_blocker: false
+        remediation: "Show before/after with economics and timeline."
+
+  PHASE_2_MARKETING:
+    weight: 0.23
+    tokens:
+      BEACHHEAD:
+        desc: Focused farm area or buyer type.
+        weight: 0.35
+        keywords_any: ["farm area","zip code","county","MSA","absorption rate","inventory months"]
+        hard_blocker: true
+        remediation: "Pick one farm area (zip/county) with data; defer others."
+      WHOLE_PRODUCT:
+        desc: Complete path incl. lenders, title, contractors.
+        weight: 0.25
+        keywords_any: ["lender","title","contractor","inspection","renovation","permits","zoning","closing"]
+        hard_blocker: false
+        remediation: "List partner stack: lenders, title, contractors; add SLAs/docs."
+      PRAGMATIST_TRANSLATION:
+        desc: Case studies, photos, HUDs, settlement statem
+
+cat > packs/token_map_rei.yaml <<'YAML'
+pass_threshold: 0.83
+hard_block_on_fail: true
+
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.34
+    tokens:
+      TARGET_LOCK:
+        desc: Asset class + seller/buyer persona + geography.
+        weight: 0.35
+        keywords_any: ["single family","multifamily","duplex","land","wholesale","fix and flip","seller profile","motivated seller","MSA","zip"]
+        hard_blocker: true
+        remediation: "Declare asset class, persona, and target MSA/zip with motivation and timeline."
+      VALUE_EQUATION:
+        desc: Economics and proof (ARV, cap, DSCR, comps).
+        weight: 0.25
+        keywords_any: ["ARV","cap rate","cash-on-cash","LTV","DSCR","comps","time to close"]
+        hard_blocker: false
+        remediation: "Quantify ARV/cap/DSCR; include comps and close timelines."
+      RISK_REVERSAL:
+        desc: Guarantees/earnest money/policy to de-risk.
+        weight: 0.20
+        keywords_any: ["earnest money","inspection period","guarantee","assignment","escrow","warranty"]
+        hard_blocker: false
+        remediation: "Add transparent guarantees or inspection/escrow terms."
+      OFFER_FRAME:
+        desc: Before/after economics for the counterpart.
+        weight: 0.20
+        keywords_any: ["before/after","profit","spread","days on market","holding costs","equity"]
+        hard_blocker: false
+        remediation: "Show before/after with economics and timeline."
+
+  PHASE_2_MARKETING:
+    weight: 0.23
+    tokens:
+      BEACHHEAD:
+        desc: Focused farm area or buyer type.
+        weight: 0.35
+        keywords_any: ["farm area","zip code","county","MSA","absorption rate","inventory months"]
+        hard_blocker: true
+        remediation: "Pick one farm area (zip/county) with data; defer others."
+      WHOLE_PRODUCT:
+        desc: Complete path incl. lenders, title, contractors.
+        weight: 0.25
+        keywords_any: ["lender","title","contractor","inspection","renovation","permits","zoning","closing"]
+        hard_blocker: false
+        remediation: "List partner stack: lenders, title, contractors; add SLAs/docs."
+      PRAGMATIST_TRANSLATION:
+        desc: Case studies, photos, HUDs, settlement statements.
+        weight: 0.20
+        keywords_any: ["case study","before photo","after photo","HUD","settlement","appraisal"]
+        hard_blocker: false
+        remediation: "Include 1–2 deals with photos and HUD pages."
+      BOWLING_ALLEY:
+        desc: Expansion MSAs/asset classes after beachhead.
+        weight: 0.20
+        keywords_any: ["adjacent market","MSA expansion","asset class expansion","trigger"]
+        hard_blocker: false
+        remediation: "List 3 next MSAs/classes with triggers (capital, team, pipeline)."
+
+  PHASE_3_SALES:
+    weight: 0.20
+    tokens:
+      DREAM_100:
+        desc: Top sellers/buyers, agents, wholesalers, funds.
+        weight: 0.35
+        keywords_any: ["Dream 100","buyer list","fund","institutional","agent list","wholesaler list"]
+        hard_blocker: true
+        remediation: "Publish Dream 100 by role (agents/funds/sellers) with cadence."
+      EDUCATE:
+        desc: Market briefs, comp packs, lending playbooks.
+        weight: 0.25
+        keywords_any: ["market brief","comp pack","playbook","webinar","workshop","newsletter"]
+        hard_blocker: false
+        remediation: "Ship monthly market brief + comp pack."
+      FOLLOW_UP:
+        desc: 8+ touches: phone, SMS, email, in-person.
+        weight: 0.20
+        keywords_any: ["touches","cadence","door knock","open house","SMS","mailers"]
+        hard_blocker: false
+        remediation: "Document an 8-touch, multi-channel cadence."
+      DATA_HOOK:
+        desc: Stat opener (DOM, inventory, spreads).
+        weight: 0.20
+        keywords_any: ["days on market","inventory","absorption","spread","ARV delta","rent growth"]
+        hard_blocker: false
+        remediation: "Add 2–3 market stats with sources."
+
+  PHASE_4_OPERATIONS:
+    weight: 0.20
+    tokens:
+      VISION_LOCK:
+        desc: EOS/operating cadence written.
+        weight: 0.25
+        keywords_any: ["EOS","vision","V/TO","quarterly plan","OKR","scorecard"]
+        hard_blocker: false
+        remediation: "Attach V/TO or operating plan."
+      RIGHT_PEOPLE:
+        desc: Acquisition, dispo, rehab roles with GWC.
+        weight: 0.20
+        keywords_any: ["acquisitions","dispositions","rehab","project manager","GWC","capacity"]
+        hard_blocker: false
+        remediation: "List seats and GWC; plan capacity by pipeline."
+      DATA_TRACK:
+        desc: Weekly KPIs (offers, contracts, close rate).
+        weight: 0.20
+        keywords_any: ["offers","contracts","close rate","avg spread","days to close","rehab days","rent-up"]
+        hard_blocker: false
+        remediation: "Publish 5–15 KPIs with owners/targets."
+      IDS:
+        desc: Weekly meeting with issues/IDS outcomes.
+        weight: 0.15
+        keywords_any: ["weekly meeting","L10","issues list","IDS","retro"]
+        hard_blocker: false
+        remediation: "Run weekly L10; record IDS decisions."
+      PROCESS_CORE:
+        desc: SOPs for acquisitions→rehab→dispo.
+        weight: 0.10
+        keywords_any: ["SOP","checklist","scope of work","contract template","inspection checklist"]
+        hard_blocker: false
+        remediation: "Document SOPs and templates for each stage."
+      ROCKS:
+        desc: 3–7 quarterly rocks with DoD.
+        weight: 0.10
+        keywords_any: ["rocks","quarterly priorities","90-day","OKR"]
+        hard_blocker: false
+        remediation: "List rocks with owners and DoD."
+
+  QA_RECURSION:
+    weight: 0.03
+    tokens:
+      INTEGRATION_CHECK:
+        desc: Cross-phase launch gate.
+        weight: 0.5
+        keywords_any: ["integration check","go/no-go","market ready","gate"]
+        hard_blocker: false
+        remediation: "Add formal gate with sign-offs."
+      FEEDBACK_LOOP:
+        desc: 30/60/90 post-mortems.
+        weight: 0.5
+        keywords_any: ["30/60/90","retro","backlog","iteration"]
+        hard_blocker: false
+        remediation: "Schedule 30/60/90 retros with owners."

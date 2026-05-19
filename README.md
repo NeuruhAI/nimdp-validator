@@ -1,3 +1,4 @@
+cd ~/neuruh/nimdp-validato![NIMDP Gate](https://github.com/NeuruhAI/nimdp-validator/actions/workflows/validate.yml/badge.svg)
 # NIMDP Validator (Neuruh)
 Gate every launch against the Neuruh Integrated Market Domination Protocol.
 
@@ -20,3 +21,6 @@ A GitHub Actions workflow validates on every push/PR.
 
 ## Packaging
 pyinstaller --onefile validator.py
+
+## Token Packs
+Private repo: https://github.com/NeuruhAI/nimdp-packs
