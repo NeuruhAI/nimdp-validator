@@ -22,6 +22,8 @@
   is used when present and no map was requested.
 - **`datetime.utcnow()`** is deprecated from Python 3.12 and slated for removal. Replaced with
   `datetime.now(timezone.utc)` in both call sites.
+- **`requests` pinned to a version with an open advisory.** Bumped `requests` from 2.32.4 to
+  2.33.0, which patches insecure temporary-file reuse in `extract_zipped_paths()`.
 - **README contradicted the repository.** It stated that no domain-specific packs shipped here
   while two were present.
 
