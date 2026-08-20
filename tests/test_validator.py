@@ -117,6 +117,29 @@ class ReportTests(unittest.TestCase):
         self.assertRegex(stamp, r"^\d{8}-\d{6}$")
 
 
+class TokenMapLoadingTests(unittest.TestCase):
+    def test_no_request_uses_the_built_in_map(self):
+        self.assertIs(validator.load_token_map(None), validator.DEFAULT_TOKENS)
+
+    def test_missing_file_is_an_error_not_a_silent_fallback(self):
+        with self.assertRaises(validator.TokenMapError):
+            validator.load_token_map(Path("does/not/exist.yaml"))
+
+    def test_invalid_yaml_is_an_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            bad = Path(d) / "bad.yaml"
+            bad.write_text("phases:\n  P:\n    desc: unquoted: colon\n")
+            with self.assertRaises(validator.TokenMapError):
+                validator.load_token_map(bad)
+
+    def test_map_without_phases_is_an_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            bad = Path(d) / "empty.yaml"
+            bad.write_text("pass_threshold: 0.5\n")
+            with self.assertRaises(validator.TokenMapError):
+                validator.load_token_map(bad)
+
+
 class ShippedFixtureTests(unittest.TestCase):
     def test_default_token_map_loads_and_scores_the_sample_spec(self):
         token_map = validator.load_token_map(ROOT / "token_map.yaml")
@@ -127,17 +150,41 @@ class ShippedFixtureTests(unittest.TestCase):
         self.assertIn("phases", results)
 
     def test_bundled_packs_are_well_formed(self):
-        for pack in sorted((ROOT / "nimdp-packs" / "packs").glob("*.yaml")):
+        packs = sorted((ROOT / "nimdp-packs" / "packs").glob("*.yaml"))
+        self.assertTrue(packs, "no bundled packs found")
+        for pack in packs:
             token_map = validator.load_token_map(pack)
-            self.assertIn("phases", token_map, pack.name)
             for phase_name, phase in token_map["phases"].items():
-                self.assertIn("weight", phase, f"{pack.name}:{phase_name}")
+                where = f"{pack.name}:{phase_name}"
+                self.assertGreater(phase["weight"], 0, where)
+                self.assertTrue(phase["tokens"], where)
                 for token_name, token in phase["tokens"].items():
-                    where = f"{pack.name}:{phase_name}.{token_name}"
-                    self.assertIn("weight", token, where)
-                    self.assertIn("desc", token, where)
-                    self.assertIn("remediation", token, where)
-                    self.assertTrue(token["keywords_any"], where)
+                    at = f"{where}.{token_name}"
+                    self.assertGreater(token["weight"], 0, at)
+                    self.assertTrue(str(token["desc"]).strip(), at)
+                    self.assertTrue(str(token["remediation"]).strip(), at)
+                    self.assertTrue(token["keywords_any"], at)
+
+    def test_every_pack_can_reach_its_own_pass_threshold(self):
+        for pack in sorted((ROOT / "nimdp-packs" / "packs").glob("*.yaml")) + [ROOT / "token_map.yaml"]:
+            token_map = validator.load_token_map(pack)
+            every_keyword = " ".join(
+                kw
+                for phase in token_map["phases"].values()
+                for token in phase["tokens"].values()
+                for kw in token["keywords_any"]
+            )
+            best = validator.aggregate_scores([every_keyword], token_map)
+            self.assertFalse(best["hard_block_triggered"], pack.name)
+            self.assertGreaterEqual(
+                best["score"], token_map.get("pass_threshold", 0.80), pack.name
+            )
+
+    def test_no_pack_contains_shell_or_heredoc_fragments(self):
+        for pack in sorted((ROOT / "nimdp-packs" / "packs").glob("*.yaml")) + [ROOT / "token_map.yaml"]:
+            text = pack.read_text()
+            self.assertNotIn("cat >", text, pack.name)
+            self.assertNotIn("<<'YAML'", text, pack.name)
 
 
 if __name__ == "__main__":

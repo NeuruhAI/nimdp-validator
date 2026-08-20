@@ -203,11 +203,35 @@ def read_file_text(path: Path) -> str:
     text = path.read_text(encoding="utf-8", errors="ignore")
     return re.sub(r'\s+', ' ', text).strip()
 
+class TokenMapError(RuntimeError):
+    """Raised when a requested token map cannot be honoured."""
+
 def load_token_map(external_yaml: Path = None) -> Dict[str, Any]:
-    if external_yaml and external_yaml.exists() and yaml is not None:
-        with external_yaml.open("r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    return DEFAULT_TOKENS
+    """Load a token map, or fail loudly.
+
+    Falling back to DEFAULT_TOKENS when a caller asked for a specific map would
+    score the input against a different rubric without saying so, so every way a
+    requested map can fail is an error. The built-in map is used only when no
+    external map was requested at all.
+    """
+    if external_yaml is None:
+        return DEFAULT_TOKENS
+    external_yaml = Path(external_yaml)
+    if not external_yaml.exists():
+        raise TokenMapError(f"token map not found: {external_yaml}")
+    if yaml is None:
+        raise TokenMapError(
+            f"cannot read {external_yaml}: PyYAML is not installed "
+            "(pip install -r requirements.txt)"
+        )
+    with external_yaml.open("r", encoding="utf-8") as f:
+        try:
+            loaded = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            raise TokenMapError(f"{external_yaml} is not valid YAML: {exc}") from exc
+    if not isinstance(loaded, dict) or not isinstance(loaded.get("phases"), dict):
+        raise TokenMapError(f"{external_yaml} has no 'phases' mapping")
+    return loaded
 
 def now_stamp() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -348,7 +372,9 @@ def parse_args():
     p.add_argument("--project-name", required=True, help="Project name")
     p.add_argument("--input", nargs="+", required=True, help="One or more spec files (.md/.txt/.json)")
     p.add_argument("--outdir", required=True, help="Output directory for reports")
-    p.add_argument("--token-map", default="token_map.yaml", help="Optional external token map (YAML)")
+    p.add_argument("--token-map", default=None,
+                   help="External token map (YAML). Defaults to ./token_map.yaml when present, "
+                        "otherwise the built-in map.")
     p.add_argument("--push-notion", action="store_true", help="Push results to Notion")
     p.add_argument("--threshold", type=float, default=None, help="Override pass threshold (0..1)")
     p.add_argument("--no_hard_block", action="store_true", help="Ignore hard blockers (for testing)")
@@ -356,8 +382,16 @@ def parse_args():
 
 def main():
     args = parse_args()
-    token_map_path = Path(args.token_map)
-    token_map = load_token_map(token_map_path if token_map_path.exists() else None)
+    if args.token_map is not None:
+        requested = Path(args.token_map)
+    else:
+        default_map = Path("token_map.yaml")
+        requested = default_map if default_map.exists() else None
+    try:
+        token_map = load_token_map(requested)
+    except TokenMapError as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        sys.exit(2)
     if args.threshold is not None:
         token_map["pass_threshold"] = float(args.threshold)
     if args.no_hard_block:

@@ -61,7 +61,7 @@ score unless the token map sets `hard_block_on_fail: false`.
 | --- | --- | --- |
 | `0` | `MARKET READY` | Score at or above the threshold, no hard blocker missing. |
 | `1` | `NOT READY` | Score below the threshold. |
-| `2` | — | No readable content in the inputs. |
+| `2` | — | Inputs unreadable, or the requested token map is missing, unparseable, or has no `phases`. |
 | `3` | `BLOCKED` | A hard-blocker token is missing. |
 
 The nonzero codes are what make this usable as a CI gate.
@@ -82,6 +82,10 @@ python validator.py \
 Two industry packs ship in [`nimdp-packs/packs/`](nimdp-packs/packs): `token_map_saas.yaml`
 and `token_map_defense.yaml`. They contain scoring vocabulary and weights only — no customer
 data, no credentials, no endpoints. Other internal packs are not published here.
+
+If a token map is requested and cannot be honoured — missing file, PyYAML not installed,
+unparseable YAML, or no `phases` mapping — the validator exits `2` rather than scoring against
+the built-in map. Only a run that requests no map at all uses the built-in one.
 
 ## Optional Notion output
 
