@@ -46,7 +46,7 @@ phases:
         hard_blocker: false
         remediation: "List interop standards and ATO/RMF path with responsible owner."
       PRAGMATIST_TRANSLATION:
-        desc: Credibility: partners, primes, prior programs.
+        desc: "Credibility: partners, primes, prior programs."
         weight: 0.20
         keywords_any: ["prime contractor","subcontractor","IDIQ","GWAC","program of record","reference unit"]
         hard_blocker: false
