@@ -1,0 +1,21 @@
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.4
+    tokens:
+      MVP_SCOPE:
+        desc: Clear definition of MVP.
+        weight: 0.5
+        keywords_any:
+        - MVP
+        - minimal
+        - core features
+        remediation: Define what is IN and OUT of MVP.
+      PROBLEM_SOLUTION:
+        desc: Clear problem statement.
+        weight: 0.5
+        keywords_any:
+        - problem
+        - solution
+        - pain point
+        remediation: State the problem clearly.
+pass_threshold: 0.7
