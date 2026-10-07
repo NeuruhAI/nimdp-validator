@@ -1,0 +1,143 @@
+pass_threshold: 0.86
+hard_block_on_fail: true
+
+phases:
+  PHASE_1_PRODUCT:
+    weight: 0.34
+    tokens:
+      TARGET_LOCK:
+        desc: End user + program office + mission thread.
+        weight: 0.35
+        keywords_any: ["end user","program office","PEO","PMO","mission thread","CONOPS","TTP","ICD","CDD"]
+        hard_blocker: true
+        remediation: "Name the end user/unit, program office, and mission thread; tie to ICD/CDD if applicable."
+      VALUE_EQUATION:
+        desc: Operational effect; test data/proof; time-to-field.
+        weight: 0.25
+        keywords_any: ["operational effect","mission impact","OT&E","DT","COTS","TRL","time to field","demo data","test report"]
+        hard_blocker: false
+        remediation: "Summarize test data and time-to-field; state TRL and any OT/DT outcomes."
+      RISK_REVERSAL:
+        desc: Pilot/event, evaluation loaners, warranty.
+        weight: 0.20
+        keywords_any: ["pilot","evaluation","loaner","warranty","event","JWA","OTA","CRADA"]
+        hard_blocker: false
+        remediation: "Offer pilot/evaluation; clarify warranty and agreement vehicle."
+      OFFER_FRAME:
+        desc: Mission outcome language, not features.
+        weight: 0.20
+        keywords_any: ["mission outcome","threat response","kill chain","sensor-to-shooter","survivability"]
+        hard_blocker: false
+        remediation: "Lead with mission outcomes and threat scenarios."
+
+  PHASE_2_MARKETING:
+    weight: 0.22
+    tokens:
+      BEACHHEAD:
+        desc: Specific unit/service/theater as first win.
+        weight: 0.35
+        keywords_any: ["unit","wing","fleet","MEF","brigade","carrier strike group","theater","combatant command"]
+        hard_blocker: true
+        remediation: "Pick one unit/theater; defer others to expansion."
+      WHOLE_PRODUCT:
+        desc: Interop/compliance/accreditation path.
+        weight: 0.25
+        keywords_any: ["STIG","ATO","RMF","DIACAP","IA","Interop","JADC2","Link-16","TAK","NATO","export","ITAR"]
+        hard_blocker: false
+        remediation: "List interop standards and ATO/RMF path with responsible owner."
+      PRAGMATIST_TRANSLATION:
+        desc: Credibility: partners, primes, prior programs.
+        weight: 0.20
+        keywords_any: ["prime contractor","subcontractor","IDIQ","GWAC","program of record","reference unit"]
+        hard_blocker: false
+        remediation: "Add prime/sub relationships and prior awards with contract numbers."
+      BOWLING_ALLEY:
+        desc: Adjacent services/commands expansion.
+        weight: 0.20
+        keywords_any: ["adjacent command","service expansion","follow-on","fielding plan"]
+        hard_blocker: false
+        remediation: "Map 3–4 next commands/services with triggers."
+
+  PHASE_3_SALES:
+    weight: 0.22
+    tokens:
+      DREAM_100:
+        desc: Named decision network (PM, XO, S-2/3/6, SSO).
+        weight: 0.35
+        keywords_any: ["Dream 100","stakeholder map","S-2","S-3","S-6","SSO","PM","PEO","XO","KOL"]
+        hard_blocker: true
+        remediation: "Publish stakeholder map and cadence by role."
+      EDUCATE:
+        desc: Tech day, briefing deck, CONOPS workshop.
+        weight: 0.25
+        keywords_any: ["tech day","brief","CONOPS","wargame","tabletop","demo day"]
+        hard_blocker: false
+        remediation: "Schedule tech day + CONOPS workshop; include deck."
+      FOLLOW_UP:
+        desc: Multi-channel sequence including in-person and secure comms.
+        weight: 0.20
+        keywords_any: ["sequence","cadence","touches","email","in-person","secure","classified"]
+        hard_blocker: false
+        remediation: "Document cadence across channels, including in-person."
+      DATA_HOOK:
+        desc: Operational stats and reduction in kill chain steps/time.
+        weight: 0.20
+        keywords_any: ["MTTR","sensor-to-shooter time","latency","detection rate","false positive","coverage"]
+        hard_blocker: false
+        remediation: "Add operational metrics and before/after deltas."
+
+  PHASE_4_OPERATIONS:
+    weight: 0.19
+    tokens:
+      VISION_LOCK:
+        desc: Program vision, milestones, acquisition path.
+        weight: 0.25
+        keywords_any: ["PoR","milestones","MS A","MS B","MS C","acquisition strategy","PoAM"]
+        hard_blocker: false
+        remediation: "Include milestones and acquisition strategy with PoAM."
+      RIGHT_PEOPLE:
+        desc: Cleared roles, facility, export controls.
+        weight: 0.20
+        keywords_any: ["clearance","SSBI","FCL","CAGE","export","ITAR","EAR","restricted"]
+        hard_blocker: false
+        remediation: "List cleared roles and facility status; declare export controls."
+      DATA_TRACK:
+        desc: KPIs for deployment, readiness, sustainment.
+        weight: 0.20
+        keywords_any: ["readiness","uptime","availability","fielding rate","sustainment","MTBF","MTTR"]
+        hard_blocker: false
+        remediation: "Publish deployment/readiness KPIs with targets."
+      IDS:
+        desc: Weekly governance with issues/IDS and risk register.
+        weight: 0.15
+        keywords_any: ["risk register","L10","governance","issues list","retro"]
+        hard_blocker: false
+        remediation: "Run weekly governance, update risks and IDS outcomes."
+      PROCESS_CORE:
+        desc: SOPs for deployment, accreditation, sustainment.
+        weight: 0.10
+        keywords_any: ["SOP","deployment playbook","ATO package","RMF steps","sustainment plan"]
+        hard_blocker: false
+        remediation: "Document SOPs for deployment, ATO, sustainment."
+      ROCKS:
+        desc: Quarterly rocks aligned to milestones.
+        weight: 0.10
+        keywords_any: ["rocks","milestones","quarterly priorities","90-day","MS A/B/C"]
+        hard_blocker: false
+        remediation: "List rocks tied to acquisition milestones."
+
+  QA_RECURSION:
+    weight: 0.05
+    tokens:
+      INTEGRATION_CHECK:
+        desc: Cross-phase go/no-go with security sign-offs.
+        weight: 0.5
+        keywords_any: ["go/no-go","integration check","ATO gate","market ready"]
+        hard_blocker: false
+        remediation: "Add go/no-go with security and PM sign-offs."
+      FEEDBACK_LOOP:
+        desc: 30/60/90 evaluation + backlog.
+        weight: 0.5
+        keywords_any: ["30/60/90","retro","OT&E findings","backlog","iteration"]
+        hard_blocker: false
+        remediation: "Schedule evaluation and capture backlog."

@@ -1,0 +1,56 @@
+# NIMDP Validation Report — valuator
+- Generated (UTC): 2025-08-10T15:54:08.649530+00:00
+- Score: **100.0%**
+- Status: **MARKET READY**
+
+---
+
+## PHASE_1_PRODUCT
+- Score Contribution: 30.0%
+
+| Token | Present | Hard Blocker | Weight |
+|---|---:|---:|---:|
+| TARGET_LOCK | YES | YES | 0.35 |
+| VALUE_EQUATION | YES | NO | 0.25 |
+| RISK_REVERSAL | YES | NO | 0.2 |
+| OFFER_FRAME | YES | NO | 0.2 |
+
+## PHASE_2_MARKETING
+- Score Contribution: 25.0%
+
+| Token | Present | Hard Blocker | Weight |
+|---|---:|---:|---:|
+| BEACHHEAD | YES | YES | 0.35 |
+| WHOLE_PRODUCT | YES | NO | 0.25 |
+| PRAGMATIST_TRANSLATION | YES | NO | 0.2 |
+| BOWLING_ALLEY | YES | NO | 0.2 |
+
+## PHASE_3_SALES
+- Score Contribution: 20.0%
+
+| Token | Present | Hard Blocker | Weight |
+|---|---:|---:|---:|
+| DREAM_100 | YES | YES | 0.35 |
+| EDUCATE | YES | NO | 0.25 |
+| FOLLOW_UP | YES | NO | 0.2 |
+| DATA_HOOK | YES | NO | 0.2 |
+
+## PHASE_4_OPERATIONS
+- Score Contribution: 20.0%
+
+| Token | Present | Hard Blocker | Weight |
+|---|---:|---:|---:|
+| VISION_LOCK | YES | NO | 0.25 |
+| RIGHT_PEOPLE | YES | NO | 0.2 |
+| DATA_TRACK | YES | NO | 0.2 |
+| IDS | YES | NO | 0.15 |
+| PROCESS_CORE | YES | NO | 0.1 |
+| ROCKS | YES | NO | 0.1 |
+
+## QA_RECURSION
+- Score Contribution: 5.0%
+
+| Token | Present | Hard Blocker | Weight |
+|---|---:|---:|---:|
+| INTEGRATION_CHECK | YES | NO | 0.5 |
+| FEEDBACK_LOOP | YES | NO | 0.5 |

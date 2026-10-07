@@ -1,0 +1,13 @@
+truncate -s 0 ./nimdp-packs/packs/token_map_saas.yaml
+
+truncate -s 0 ./nimdp-packs/packs/token_map_saas.yaml
+
+truncate -s 0  /absolute/path/to/your/file.yaml
+
+ls -1 ~/Downloads | grep -i token_map
+find ~ -type f -iname 'token_map_saas.yml' 2>/dev/null
+
+find ~ -type f -name 'token_map_saas.yaml' 2>/dev/null
+
+find / -type f -name 'token_map_saas.yaml' 2>/dev/null
+
